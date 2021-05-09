@@ -21,12 +21,21 @@ function selectorCallbacks() {
     }
 }
 
-function waitForElement(selector, callback) {
+function waitForElement(selector, callback, timeout = 0) {
     nodesLock = true;
     if(observeNodes.hasOwnProperty(selector)) {
         observeNodes[selector].push(callback);
     } else {
         observeNodes[selector] = [callback];
+    }
+    if(timeout && timeout > 0) {
+        setTimeout(function () {
+            nodesLock = true;
+            indexOfCb = observeNodes[selector].indexOf(callback);
+            observeNodes[selector].splice(indexOfCb, 1);
+            nodesLock = false;
+            callback(true)
+        }, timeout)
     }
     nodesLock = false;
 }
